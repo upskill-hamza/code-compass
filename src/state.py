@@ -35,6 +35,7 @@ class EnrichedIssue(TypedDict):
     code_context_summary: str
     difficulty_score: float
     difficulty_reasoning: str
+    estimated_time: str          # "few hours" | "a weekend" | "a week+" - set by difficulty_scoring_node
     match_score: float
     match_reasoning: str
     starting_point: str

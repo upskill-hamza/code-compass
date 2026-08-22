@@ -133,6 +133,7 @@ def issue_understanding_node(state: GraphState) -> GraphState:
                     "code_context_summary": "",
                     "difficulty_score": 0.0,
                     "difficulty_reasoning": "",
+                    "estimated_time": "",
                     "match_score": 0.0,
                     "match_reasoning": "",
                     "starting_point": "",
