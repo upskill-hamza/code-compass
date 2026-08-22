@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-
+    
 env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
 load_dotenv(env_path)
 
@@ -10,6 +10,7 @@ from repo_indexer import build_repo_index
 from code_context_node import code_context_node
 from difficulty_scoring_node import difficulty_scoring_node
 from personalized_ranking_node import personalized_ranking_node
+from starting_point_node import starting_point_node
 
 skill_profile = {
     "languages": ["Python"],
@@ -37,3 +38,11 @@ for e in state["final_ranked_list"]:
     print(f"  Difficulty: {e['difficulty_score']} ({e['estimated_time']})")
     print(f"  Why: {e['difficulty_reasoning']}")
     print(f"  Match reasoning: {e['match_reasoning']}")
+
+
+state = starting_point_node(state, client, "Textualize", "rich", top_n=3)
+
+print("\n=== TOP 3 WITH STARTING POINTS ===")
+for e in state["final_ranked_list"][:3]:
+    print(f"\n#{e['issue_number']}: {e['title']} (match: {e['match_score']})")
+    print("Starting point:", e["starting_point"])

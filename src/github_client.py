@@ -120,6 +120,32 @@ class GitHubClient:
             return []
         return [c["body"] for c in resp.json() if c.get("body")]
 
+    def search_merged_prs(
+        self, owner: str, repo: str, keywords: list[str], max_results: int = 3
+    ) -> list[dict]:
+        """
+        Searches for merged PRs in the repo matching the given keywords, to
+        use as a reference pattern for a similar new issue. Uses GitHub's
+        Search API, which has its own (stricter) rate limits separate from
+        the regular REST API - fine for occasional use like this (a handful
+        of searches per run), not suitable for high-volume querying.
+        """
+        if not keywords:
+            return []
+
+        query_terms = " ".join(keywords[:3])  # keep query short - GitHub search works best focused
+        query = f"repo:{owner}/{repo} type:pr is:merged {query_terms}"
+        url = f"{GITHUB_API_BASE}/search/issues"
+        resp = self._get(url, params={"q": query, "per_page": max_results})
+
+        if resp.status_code != 200:
+            return []  # search failures shouldn't break the pipeline - just means no reference PR found
+
+        results = []
+        for item in resp.json().get("items", [])[:max_results]:
+            results.append({"title": item["title"], "url": item["html_url"], "number": item["number"]})
+        return results
+
 
 if __name__ == "__main__":
     # Quick manual smoke test
