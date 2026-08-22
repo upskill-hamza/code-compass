@@ -63,7 +63,7 @@ def _build_llm():
             "GROQ_API_KEY not set. Get a free key at console.groq.com and add it to your .env file."
         )
     llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         api_key=api_key,
         temperature=0.1,  # low temperature - we want consistent, factual analysis, not creativity
     )

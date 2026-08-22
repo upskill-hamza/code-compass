@@ -12,7 +12,9 @@ reused by code_context_node.py to search for files relevant to each issue.
 
 import os
 import shutil
+import stat
 import subprocess
+import tempfile
 from dataclasses import dataclass
 
 import chromadb
@@ -41,6 +43,17 @@ class CodeChunk:
     start_line_estimate: int
 
 
+def _force_remove_readonly(func, path, exc_info):
+    """
+    shutil.rmtree error handler for Windows: git marks internal files
+    (e.g. .git/objects/pack/*.idx) as read-only, which makes Windows refuse
+    to delete them. This clears the read-only attribute and retries the
+    same operation. No-op-safe on other platforms too.
+    """
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
 def clone_repo(owner: str, repo: str, dest_dir: str) -> str:
     """
     Shallow-clones a public repo. Returns the path it was cloned into.
@@ -48,7 +61,7 @@ def clone_repo(owner: str, repo: str, dest_dir: str) -> str:
     """
     repo_path = os.path.join(dest_dir, f"{owner}__{repo}")
     if os.path.exists(repo_path):
-        shutil.rmtree(repo_path)
+        shutil.rmtree(repo_path, onerror=_force_remove_readonly)
 
     url = f"https://github.com/{owner}/{repo}.git"
     result = subprocess.run(
@@ -151,13 +164,18 @@ class RepoIndex:
         return out
 
 
-def build_repo_index(owner: str, repo: str, workdir: str = "/tmp/issue-matchmaker-repos") -> RepoIndex:
+def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
     """
     Full pipeline: clone -> walk -> chunk -> embed -> index.
     Uses an in-memory Chroma client (chromadb.EphemeralClient) since we
     rebuild the index each run - swap to PersistentClient if you want to
     cache indexes across runs for the same repo.
+
+    workdir defaults to the OS's real temp directory (via tempfile.gettempdir())
+    rather than a hardcoded "/tmp/..." path, which isn't valid on Windows.
     """
+    if workdir is None:
+        workdir = os.path.join(tempfile.gettempdir(), "issue-matchmaker-repos")
     os.makedirs(workdir, exist_ok=True)
     repo_path = clone_repo(owner, repo, workdir)
 
