@@ -46,7 +46,7 @@ def build_graph(
     top_n_starting_points: int = 3,
 ):
     """
-    Builds and compiles the full Issue Matchmaker pipeline as a LangGraph
+    Builds and compiles the full Code Compass pipeline as a LangGraph
     graph, bound to a specific repo and skill profile.
 
     Returns a compiled graph - call .invoke({}) on it to run the full

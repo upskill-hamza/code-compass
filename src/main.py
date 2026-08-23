@@ -1,7 +1,7 @@
 """
 main.py
 
-FastAPI backend for Issue Matchmaker. Exposes 3 endpoints:
+FastAPI backend for Code Compass. Exposes 3 endpoints:
 
   POST /analyze          - kick off analysis for a repo, returns a job_id immediately
   GET  /status/{job_id}   - poll job status ("pending" | "running" | "done" | "error")
@@ -41,7 +41,7 @@ from pydantic import BaseModel
 from job_manager import job_store, PENDING, RUNNING, DONE, ERROR
 from graph import build_graph
 
-app = FastAPI(title="Issue Matchmaker API")
+app = FastAPI(title="Code Compass API")
 
 # Allow the React dev server (typically localhost:5173 for Vite) to call this
 # API during local development. Tighten this to a specific origin before any
@@ -126,4 +126,4 @@ def get_results(job_id: str):
 
 @app.get("/")
 def root():
-    return {"status": "Issue Matchmaker API is running"}
+    return {"status": "Code Compass API is running"}

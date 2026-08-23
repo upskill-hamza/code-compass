@@ -1,7 +1,7 @@
 """
 job_manager.py
 
-Manages background execution of the Issue Matchmaker pipeline (which takes
+Manages background execution of the Code Compass pipeline (which takes
 anywhere from ~30 seconds to a couple minutes - cloning a repo, building an
 index, and multiple LLM calls are not instant) so the FastAPI layer can
 return immediately with a job_id instead of making the HTTP request hang.

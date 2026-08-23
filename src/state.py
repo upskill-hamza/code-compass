@@ -1,7 +1,7 @@
 """
 state.py
 
-Shared state schema for the Issue Matchmaker LangGraph pipeline.
+Shared state schema for the Code Compass LangGraph pipeline.
 Every node reads from and writes to this shared state.
 """
 

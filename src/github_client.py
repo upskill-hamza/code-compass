@@ -1,7 +1,7 @@
 """
 github_client.py
 
-Handles all communication with the GitHub REST API for Issue Matchmaker.
+Handles all communication with the GitHub REST API for Code Compass.
 
 Free-tier notes:
 - Unauthenticated requests: 60 requests/hour (fine for quick tests).
