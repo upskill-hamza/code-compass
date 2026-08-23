@@ -1,5 +1,7 @@
 # Code Compass 🧭
 
+[![Tests](https://github.com/upskill-hamza/code-compass/actions/workflows/tests.yml/badge.svg)](https://github.com/upskill-hamza/code-compass/actions/workflows/tests.yml)
+
 **Stop guessing which open-source issue you can actually finish.**
 
 "Good first issue" labels are stale, inconsistently applied, and often wrong the moment a maintainer adds one clarifying comment. Code Compass reads the actual issue, the actual discussion, and the actual code — then tells you which issues genuinely fit your skill level and the time you have, with a concrete first step for each.
@@ -65,8 +67,8 @@ Everything here runs on free tiers or locally — no API costs required to run t
 ### 1. Backend setup
 
 ```bash
-git clone <your-repo-url>
-cd issue-matchmaker
+git clone "https://github.com/upskill-hamza/code-compass.git"
+cd code-compass
 pip install -r requirements.txt
 ```
 
@@ -130,7 +132,7 @@ Example request body for `/analyze`:
 ## Project structure
 
 ```
-issue-matchmaker/
+code-compass/
 ├── src/
 │   ├── github_client.py          # GitHub REST + Search API wrapper
 │   ├── state.py                  # Shared LangGraph state schema
@@ -175,7 +177,6 @@ issue-matchmaker/
 - [x] LangGraph pipeline wiring
 - [x] FastAPI backend
 - [x] React dashboard
-- [ ] Free hosting (Vercel + Render)
 - [ ] Multi-language difficulty tuning
 - [ ] Persistent index caching across runs
 

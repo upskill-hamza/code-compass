@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Each test file is its own step so a failure is immediately obvious
+      # in the GitHub UI (which specific module broke), rather than one
+      # giant log to scroll through. None of these require GROQ_API_KEY or
+      # GITHUB_TOKEN - every test stubs out the real LLM/vector-search
+      # dependencies, so this runs the same way for anyone who forks the repo.
+      - name: Test - github_client
+        run: python src/test_github_client.py
+
+      - name: Test - issue_understanding_node
+        run: python src/test_issue_understanding_node.py
+
+      - name: Test - repo_indexer + code_context_node
+        run: python src/test_repo_indexer_and_context.py
+
+      - name: Test - difficulty_scoring + personalized_ranking
+        run: python src/test_phase4_ranking.py
+
+      - name: Test - starting_point_node
+        run: python src/test_starting_point_node.py
+
+      - name: Test - graph wiring
+        run: python src/test_graph.py
+
+      - name: Test - job_manager
+        run: python src/test_job_manager.py
