@@ -189,8 +189,21 @@ def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
 
     client = chromadb.EphemeralClient()
     embed_fn = embedding_functions.DefaultEmbeddingFunction()  # local ONNX MiniLM, free
+    collection_name = f"{owner}_{repo}_index"
+
+    # If this repo was already indexed earlier in the same server process
+    # (e.g. re-running analysis on the same repo, or React re-submitting),
+    # a stale collection with this name may already exist. Always rebuild
+    # fresh rather than reusing it - the repo's issues/code may have
+    # changed since the last run - so delete first if present, ignoring
+    # the error if it doesn't exist yet.
+    try:
+        client.delete_collection(name=collection_name)
+    except Exception:
+        pass  # collection didn't exist yet - nothing to clean up, this is the normal first-run case
+
     collection = client.create_collection(
-        name=f"{owner}_{repo}_index", embedding_function=embed_fn
+        name=collection_name, embedding_function=embed_fn
     )
 
     # Chroma requires unique string IDs and batches well under a few thousand docs at a time
