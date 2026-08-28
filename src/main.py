@@ -43,12 +43,16 @@ from graph import build_graph
 
 app = FastAPI(title="Code Compass API")
 
-# Allow the React dev server (typically localhost:5173 for Vite) to call this
-# API during local development. Tighten this to a specific origin before any
-# real deployment - "*" is fine for local dev only.
+# Allow both the deployed frontend and local dev (Vite's default port) to
+# call this API. Tightened from allow_origins=["*"] now that the real
+# Vercel domain is known - keeping localhost here too since local
+# development needs to keep working after this change.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://code-compass-phi.vercel.app",
+        "http://localhost:5173",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )

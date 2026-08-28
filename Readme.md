@@ -1,6 +1,7 @@
 # Code Compass 🧭
 
-[![Tests](https://github.com/upskill-hamza/code-compass/actions/workflows/tests.yml/badge.svg)](https://github.com/upskill-hamza/code-compass/actions/workflows/tests.yml)
+
+**🔗 [Try it live](https://code-compass-phi.vercel.app)** *(hosted on a free tier — the first request after a period of inactivity may take 30-60s while the backend spins back up)*
 
 **Stop guessing which open-source issue you can actually finish.**
 
@@ -36,7 +37,7 @@ No step relies on a GitHub label. Every ranking is explainable — the tool tell
 
 ## Screenshot
 
-*(add a screenshot of the results dashboard here)*
+<img src="frontend\public\screenshot.png" width="400" alt="Alternative Text">
 
 ---
 
@@ -67,8 +68,9 @@ Everything here runs on free tiers or locally — no API costs required to run t
 ### 1. Backend setup
 
 ```bash
-git clone "https://github.com/upskill-hamza/code-compass.git"
+git clone https://github.com/upskill-hamza/code-compass
 cd code-compass
+cd src
 pip install -r requirements.txt
 ```
 
@@ -145,14 +147,14 @@ code-compass/
 │   ├── graph.py                  # Wires all nodes into one LangGraph graph
 │   ├── job_manager.py            # Background job tracking for the API
 │   ├── main.py                   # FastAPI app
-│   └── test_*.py                 # Offline test suite for every module
+│   ├── test_*.py                 # Offline test suite for every module
+    └── requirements.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── App.jsx
 │   │   ├── api.js
 │   │   └── components/
 │   └── ...
-├── requirements.txt
 └── .env.example
 ```
 
@@ -177,6 +179,7 @@ code-compass/
 - [x] LangGraph pipeline wiring
 - [x] FastAPI backend
 - [x] React dashboard
+- [x] Free hosting (Vercel + Render)
 - [ ] Multi-language difficulty tuning
 - [ ] Persistent index caching across runs
 
