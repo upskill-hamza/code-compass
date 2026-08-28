@@ -1,5 +1,6 @@
 # Code Compass 🧭
 
+[![Tests](https://github.com/upskill-hamza/code-compass/actions/workflows/tests.yml/badge.svg)](https://github.com/upskill-hamza/code-compass/actions/workflows/tests.yml)
 
 **🔗 [Try it live](https://code-compass-phi.vercel.app)** *(hosted on a free tier — the first request after a period of inactivity may take 30-60s while the backend spins back up)*
 
@@ -37,7 +38,7 @@ No step relies on a GitHub label. Every ranking is explainable — the tool tell
 
 ## Screenshot
 
-<img src="frontend\public\screenshot.png" width="400" alt="Alternative Text">
+<img src="https://ibb.co/B24ZCt4h" width="400" alt="Alternative Text">
 
 ---
 
@@ -70,7 +71,6 @@ Everything here runs on free tiers or locally — no API costs required to run t
 ```bash
 git clone https://github.com/upskill-hamza/code-compass
 cd code-compass
-cd src
 pip install -r requirements.txt
 ```
 
