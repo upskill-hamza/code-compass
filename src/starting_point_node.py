@@ -19,6 +19,7 @@ from langchain_groq import ChatGroq
 
 from state import GraphState
 from github_client import GitHubClient
+from llm_utils import invoke_with_retry
 
 DEFAULT_TOP_N = 3
 
@@ -69,11 +70,12 @@ Code context:
 Similar past merged PRs in this repo:
 {pr_text}"""
 
-    response = llm.invoke(
+    response = invoke_with_retry(
+        llm,
         [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
-        ]
+        ],
     )
     return response.content.strip()
 

@@ -64,7 +64,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen chart-texture flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-ink flex items-center justify-center px-4 py-12">
       {phase === "form" && (
         <RepoInputForm onSubmit={handleSubmit} isSubmitting={false} />
       )}

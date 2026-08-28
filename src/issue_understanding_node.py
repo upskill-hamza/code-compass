@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 from langchain_groq import ChatGroq
 
 from state import GraphState, IssueUnderstanding
+from llm_utils import invoke_with_retry
 
 
 class IssueUnderstandingSchema(BaseModel):
@@ -92,11 +93,12 @@ Labels: {', '.join(issue.get('labels', [])) or '(none)'}
 Comment Thread:
 {comments_text}"""
 
-    result: IssueUnderstandingSchema = structured_llm.invoke(
+    result: IssueUnderstandingSchema = invoke_with_retry(
+        structured_llm,
         [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
-        ]
+        ],
     )
 
     return IssueUnderstanding(

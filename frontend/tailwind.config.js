@@ -4,24 +4,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        chart: {
-          navy: "#12192B",
-          navyLight: "#1B2440",
-          parchment: "#EDE6D6",
-          parchmentDim: "#B9B2A0",
-          brass: "#C08A3E",
-          brassLight: "#D9A860",
+        ink: {
+          DEFAULT: "#0A0A0C",
+          surface: "#141416",
+          surfaceLight: "#1C1C1F",
+          border: "#2A2A2E",
         },
-        difficulty: {
-          easy: "#5B7A5C",
-          moderate: "#C08A3E",
-          hard: "#8B4A3A",
+        text: {
+          primary: "#F5F5F7",
+          secondary: "#98989F",
+          tertiary: "#5C5C63",
+        },
+        accent: {
+          DEFAULT: "#3B82F6",
+          light: "#60A5FA",
+          dim: "#1E3A6B",
+        },
+        tier: {
+          easy: "#34D399",
+          moderate: "#FBBF24",
+          hard: "#F87171",
         },
       },
       fontFamily: {
-        display: ["Fraunces", "serif"],
-        body: ["Inter", "sans-serif"],
+        sans: ["Inter", "-apple-system", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
       },
     },
   },

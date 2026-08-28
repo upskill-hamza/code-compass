@@ -2,22 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: "Inter", sans-serif;
-  color: #EDE6D6;
+  font-family: "Inter", -apple-system, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle chart-paper texture via layered gradients - reinforces the
-   navigation/instrument concept without needing an image asset */
-.chart-texture {
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(192, 138, 62, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(192, 138, 62, 0.03) 0%, transparent 50%);
+::selection {
+  background-color: rgba(59, 130, 246, 0.35);
+  color: #fff;
 }
 
-/* Visible keyboard focus - accessibility floor from the design skill */
+/* Minimal custom scrollbar, matches the ink palette instead of default OS chrome */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0c;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2e;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3f;
+}
+
 :focus-visible {
-  outline: 2px solid #C08A3E;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
@@ -26,5 +42,6 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

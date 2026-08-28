@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 from langchain_groq import ChatGroq
 
 from state import GraphState
+from llm_utils import invoke_with_retry
 
 
 class DifficultyScoringSchema(BaseModel):
@@ -91,11 +92,12 @@ Likely relevant files ({len(enriched_issue['likely_files'])} total):
 Code context:
 {enriched_issue['code_context_summary'] or '(no context available)'}"""
 
-    result: DifficultyScoringSchema = structured_llm.invoke(
+    result: DifficultyScoringSchema = invoke_with_retry(
+        structured_llm,
         [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
-        ]
+        ],
     )
 
     return {
