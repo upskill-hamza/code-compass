@@ -34,7 +34,8 @@ SOURCE_EXTENSIONS = {
 
 MAX_CHUNK_CHARS = 1500
 CHUNK_OVERLAP_CHARS = 200
-
+MAX_FILE_SIZE_BYTES = 400_000
+MAX_TOTAL_CHUNKS = 400
 
 @dataclass
 class CodeChunk:
@@ -115,6 +116,8 @@ def chunk_file(repo_path: str, rel_path: str) -> list[CodeChunk]:
     but works identically across Python/JS/Go/etc without per-language parsers.
     """
     full_path = os.path.join(repo_path, rel_path)
+    if os.path.getsize(full_path) > MAX_FILE_SIZE_BYTES:
+        return []  # skip - too large, likely generated/vendored/minified content
     try:
         with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
             text = f.read()
@@ -185,7 +188,10 @@ def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
 
     all_chunks: list[CodeChunk] = []
     for rel_path in files:
+        if len(all_chunks) >= MAX_TOTAL_CHUNKS:
+            break
         all_chunks.extend(chunk_file(repo_path, rel_path))
+    all_chunks = all_chunks[:MAX_TOTAL_CHUNKS]
 
     client = chromadb.EphemeralClient()
     embed_fn = embedding_functions.DefaultEmbeddingFunction()  # local ONNX MiniLM, free
@@ -221,5 +227,10 @@ def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
             documents=documents[i : i + batch_size],
             metadatas=metadatas[i : i + batch_size],
         )
+
+    try:
+        shutil.rmtree(repo_path, onerror=_force_remove_readonly)
+    except Exception:
+        pass  # best-effort cleanup, not worth failing the whole run over
 
     return RepoIndex(collection)
