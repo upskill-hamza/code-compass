@@ -15,6 +15,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+import requests
 from dataclasses import dataclass
 
 import chromadb
@@ -36,7 +37,7 @@ MAX_CHUNK_CHARS = 1500
 CHUNK_OVERLAP_CHARS = 200
 MAX_FILE_SIZE_BYTES = 400_000
 MAX_TOTAL_CHUNKS = 400
-
+MAX_REPO_SIZE_KB = 400_000  # ~200MB - conservative given Render free tier's 512MB total RAM
 @dataclass
 class CodeChunk:
     file_path: str       # path relative to repo root
@@ -166,6 +167,37 @@ class RepoIndex:
             )
         return out
 
+def check_repo_size_or_raise(owner: str, repo: str):
+    """
+    Checks a repo's reported size via GitHub's API before attempting to
+    clone it. GitHub reports 'size' in KB (their compressed size on disk),
+    a reasonable proxy for clone size. This runs BEFORE git clone, since
+    cloning an oversized repo could exhaust memory/disk on a
+    resource-constrained host before our chunk-count/file-size caps ever
+    get a chance to help.
+    """
+    url = f"https://api.github.com/repos/{owner}/{repo}"
+    headers = {"Accept": "application/vnd.github+json"}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        size_kb = resp.json().get("size", 0)
+    except Exception:
+        # If the size check itself fails (rate limit, network hiccup),
+        # don't block the whole pipeline over a diagnostic step - just
+        # proceed and let the existing caps act as a fallback.
+        return
+
+    if size_kb > MAX_REPO_SIZE_KB:
+        raise RuntimeError(
+            f"Repo {owner}/{repo} is too large to analyze on this free-tier "
+            f"deployment ({size_kb / 1000:.0f}MB, limit is {MAX_REPO_SIZE_KB / 1000:.0f}MB). "
+            f"Try a smaller repo."
+        )
 
 def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
     """
@@ -177,6 +209,7 @@ def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
     workdir defaults to the OS's real temp directory (via tempfile.gettempdir())
     rather than a hardcoded "/tmp/..." path, which isn't valid on Windows.
     """
+    check_repo_size_or_raise(owner, repo)
     if workdir is None:
         workdir = os.path.join(tempfile.gettempdir(), "issue-matchmaker-repos")
     os.makedirs(workdir, exist_ok=True)
