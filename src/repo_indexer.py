@@ -16,6 +16,7 @@ import stat
 import subprocess
 import tempfile
 import requests
+import gc
 from dataclasses import dataclass
 
 import chromadb
@@ -36,7 +37,7 @@ SOURCE_EXTENSIONS = {
 MAX_CHUNK_CHARS = 1500
 CHUNK_OVERLAP_CHARS = 200
 MAX_FILE_SIZE_BYTES = 400_000
-MAX_TOTAL_CHUNKS = 400
+MAX_TOTAL_CHUNKS = 150
 MAX_REPO_SIZE_KB = 400_000  # ~200MB - conservative given Render free tier's 512MB total RAM
 @dataclass
 class CodeChunk:
@@ -253,14 +254,14 @@ def build_repo_index(owner: str, repo: str, workdir: str = None) -> RepoIndex:
         for c in all_chunks
     ]
 
-    batch_size = 500
+    batch_size = 25
     for i in range(0, len(ids), batch_size):
         collection.add(
             ids=ids[i : i + batch_size],
             documents=documents[i : i + batch_size],
             metadatas=metadatas[i : i + batch_size],
         )
-
+    gc.collect()
     try:
         shutil.rmtree(repo_path, onerror=_force_remove_readonly)
     except Exception:
