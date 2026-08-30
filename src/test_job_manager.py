@@ -40,10 +40,13 @@ def test_run_in_background_success_path():
     immediate_status = store.get_job(job_id)["status"]
     assert immediate_status in (PENDING, RUNNING), f"Expected non-terminal status immediately, got {immediate_status}"
 
-    time.sleep(0.2)  # give the background thread time to finish
-
+    deadline = time.time() + 3.0
     final_job = store.get_job(job_id)
-    assert final_job["status"] == DONE
+    while final_job["status"] not in (DONE, ERROR) and time.time() < deadline:
+        time.sleep(0.05)
+        final_job = store.get_job(job_id)
+
+    assert final_job["status"] == DONE, f"Job did not complete in time, final status: {final_job['status']}"
     assert final_job["result"]["final_ranked_list"][0]["issue_number"] == 1
     print("PASS: background job runs asynchronously and completes with correct result.")
 

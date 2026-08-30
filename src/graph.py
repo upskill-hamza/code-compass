@@ -57,6 +57,7 @@ def build_graph(
     index_holder: dict = {}  # closure cell for the built repo index (not JSON-serializable, kept out of state)
 
     def fetch_issues(state: GraphState) -> GraphState:
+        print(f"[pipeline] fetch_issues starting for {repo_owner}/{repo_name}", flush=True)
         issues = client.fetch_open_issues(repo_owner, repo_name, max_issues=max_issues)
         state["repo_owner"] = repo_owner
         state["repo_name"] = repo_name

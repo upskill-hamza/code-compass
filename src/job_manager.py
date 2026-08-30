@@ -65,18 +65,19 @@ class JobStore:
         stuck at "running" forever with no way to diagnose why.
         """
         def _run():
+            print(f"[job {job_id}] Background thread started.", flush=True)
             self._set_status(job_id, status=RUNNING)
+            print(f"[job {job_id}] Status set to RUNNING, starting pipeline...", flush=True)
             try:
                 result = target_fn()
+                print(f"[job {job_id}] Pipeline finished successfully.", flush=True)
                 self._set_status(job_id, status=DONE, result=result)
             except Exception as e:
-                # Log the full traceback server-side (visible in Render's Logs tab)
-                # for our own debugging, but keep the user-facing error message
-                # clean - a raw traceback exposes internal file paths and looks
-                # unprofessional on a public-facing product.
                 print(f"[job {job_id}] Pipeline failed:\n{traceback.format_exc()}", flush=True)
                 self._set_status(job_id, status=ERROR, error=str(e))
-
+        
+        thread = threading.Thread(target=_run, daemon=True)
+        thread.start()
 # Module-level singleton - simplest possible approach for a single-instance
 # free-tier deployment. main.py imports this directly.
 job_store = JobStore()
